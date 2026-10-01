@@ -181,22 +181,24 @@ function makeRabbit(){
   rab={hr,rx,ry,L,w,h,ox:hr*2,oy:hr*2.6,sc,sx:sc.getContext('2d'),ear,hS,lv};
 }
 function drawRabbit(t){
-  if(!rab)return;const q=t-(total+1.6);if(q<=0)return;
+  if(!rab)return;const q=t-(total+0.25);if(q<=0)return;   // was total+1.6
   const o=rab,hr=o.hr,x=o.sx;
-  const off=(1-ease(q/6.5))*3.5*hr,dR=(1-ease((q-.5)/2.5))*.5*hr,dL=(1-ease((q-1.8)/2.5))*.5*hr;
+  const off=(1-ease(q/3.0))*3.5*hr,                       // was q/6.5
+        dR=(1-ease((q-.2)/1.2))*.5*hr,                     // was (q-.5)/2.5
+        dL=(1-ease((q-.8)/1.2))*.5*hr;                     // was (q-1.8)/2.5
   const sw=Math.sin(q*.55)*.022,br=1+Math.sin(q*1.5)*.006,tw=q>9?Math.pow(Math.max(0,Math.sin(q*.8)),12)*.05:0;
   x.setTransform(dpr,0,0,dpr,0,0);x.globalCompositeOperation='source-over';x.clearRect(0,0,o.w,o.h);
   x.save();x.translate(o.ox,o.oy+off);x.translate(0,hr);x.rotate(sw);x.scale(1,br);x.translate(0,-hr);
   [[-1,dL,tw],[1,dR,-tw*.6]].forEach(e=>{x.save();x.translate(e[0]*.42*hr,-.7*hr+e[1]);x.rotate(e[0]*.2+e[2]);x.scale(e[0],1);
     x.drawImage(o.ear.c,-o.ear.ox,-o.ear.oy,o.ear.w,o.ear.h);x.restore();});
   x.drawImage(o.hS.c,-o.hS.ox,-o.hS.oy,o.hS.w,o.hS.h);
-  const ph=q%5.6,b=q>8&&ph>5.3?Math.sin((ph-5.3)/.3*3.14159):0;
+  const ph=q%5.6,b=q>4&&ph>5.3?Math.sin((ph-5.3)/.3*3.14159):0;   // was q>8
   if(b>0){x.fillStyle='#ece1da';[-1,1].forEach(s=>{x.beginPath();x.ellipse(s*.5*hr,0,.11*hr,.12*hr*b,0,0,6.283);x.fill()})}
   x.restore();
   x.globalCompositeOperation='destination-in';const g=x.createLinearGradient(0,o.oy+hr*.7,0,o.oy+hr*1.1);
   g.addColorStop(0,'#fff');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,o.w,o.h);x.globalCompositeOperation='source-over';
-  ctx.save();ctx.globalAlpha=E(q/1.2);ctx.drawImage(o.sc,o.rx-o.ox,o.ry-o.oy,o.w,o.h);ctx.restore();
-  o.lv.forEach((l,i)=>{const gr=ease(q/2.4-i*.04);if(gr<=0)return;
+  ctx.save();ctx.globalAlpha=E(q/0.6);ctx.drawImage(o.sc,o.rx-o.ox,o.ry-o.oy,o.w,o.h);ctx.restore();   // was q/1.2
+  o.lv.forEach((l,i)=>{const gr=ease(q/1.4-i*.03);if(gr<=0)return;   // was q/2.4-i*.04
     leaf(o.rx+l.dx*hr,o.L+hr*.2,l.a+Math.sin(t*.5+l.ph)*.03,l.len*hr*gr,.95,.5)});
 }
 function resize(){
@@ -348,7 +350,7 @@ function frame(now){
 }
 function startAnim(){
   resize();
-  total=Math.max(...flowers.map(f=>f.delay+f.dur*.93))+.2; // slower than the ~10s reference, plus a short pause on the finished garden
+  total=Math.max(...flowers.map(f=>f.delay+f.dur*.93))+.2; // unchanged: original bloom speed
   cv.classList.add('on');
   t0=performance.now();playing=true;requestAnimationFrame(frame);
 }
